@@ -1,0 +1,46 @@
+body {
+    background-color: darkgray;
+}
+
+#head {
+    padding-top: 5px !important;
+    margin-bottom: 10px;
+}
+
+h1 {
+    display: inline;
+    max-height: 50vh;
+}
+
+input {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 10px;
+}
+
+#rolled-dice .dice {
+    font-size: 10vh;
+}
+
+#rolled-dice {
+    position: relative;
+    min-height: 50vh;
+}
+
+#player-dice .dice {
+    font-size: 3vh;
+}
+
+.roll-container {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 0;
+}
+
+#roll-and-select {
+    margin-right: 3px;
+}
+
+.roll-dice {
+    margin-bottom: 10px;
+}
