@@ -6,15 +6,13 @@
 * @returns {void}
 */
 $(document).ready(() => {
-    $(document).on('click', (e) => {
-        if (e.target.id === 'add-player') {
-            e.preventDefault();
-            addPlayer();
-        }
+    $('#add-player').on('click', (e) => {
+        e.preventDefault();
+        addPlayer();        
     });
     
-    $(document).on('keypress', (e) => {
-        if (e.target.id === 'player-name' && e.which === 13) {
+    $('#player-name').on('keypress', (e) => {
+        if (e.which === 13) {
             e.preventDefault();
             addPlayer();
         }
@@ -38,25 +36,39 @@ $(document).ready(() => {
 */
 function makeButtons(){
     if($('#start').text() === ('Restart')){
-        $('#start').text('Start Game');
-        $('#start').removeClass('btn-danger');
-        $('#player-1, #player-2, #player-3, #player-4, #player-5, #player-6').empty();
-        $('#score-1, #score-2, #score-3, #score-4, #score-5, #score-6').empty();
-        $('#game-buttons').empty();
-        $('#rolled-dice').empty();
-        $('#player-dice').empty();
-        $('#player-name').show();
-        $('#player-color').show();
-        $('#add-player').show();
-        playerCount = 1;
+        restartButton();
     } else{
-        $('#start').text('Restart');
-        $('#start').addClass('btn-danger');
-        $('#player-name').hide();
-        $('#player-color').hide();
-        $('#add-player').hide();
-        
-        let rollAndSelect = $('<div>').attr('id', 'roll-and-select').addClass('btn btn-success').text('Roll Dice!');
+        startButton();
+    }
+}
+
+function startButton(){
+    $('#start').text('Restart');
+    $('#start').addClass('btn-danger');
+    $('#player-name').hide();
+    $('#player-color').hide();
+    $('#add-player').hide();
+    
+    rollAndSelectButton();
+    endTurnButton();
+}
+
+function restartButton(){
+    $('#start').text('Start Game');
+    $('#start').removeClass('btn-danger');
+    $('#player-1, #player-2, #player-3, #player-4, #player-5, #player-6').empty();
+    $('#score-1, #score-2, #score-3, #score-4, #score-5, #score-6').empty();
+    $('#game-buttons').empty();
+    $('#rolled-dice').empty();
+    $('#player-dice').empty();
+    $('#player-name').show();
+    $('#player-color').show();
+    $('#add-player').show();
+    playerCount = 1;
+}
+
+function rollAndSelectButton(){
+    let rollAndSelect = $('<div>').attr('id', 'roll-and-select').addClass('btn btn-success').text('Roll Dice!');
         $('#game-buttons').append(rollAndSelect);
         $('#roll-and-select').on('click', () => {
             if($('#roll-and-select').text() === 'Roll Dice!'){
@@ -70,18 +82,22 @@ function makeButtons(){
                 }
             }
         })
+}
 
-        let end = $('<div>').attr('id', 'end').addClass('btn btn-danger').text('End Turn');
-        $('#game-buttons').append(end);
-        $('#end').on('click', () => {
-            $('#rolled-dice').empty();
-            $('#player-dice').empty();
+function endTurnButton(){
+    let end = $('<div>').attr('id', 'end').addClass('btn btn-danger').text('End Turn');
+    $('#game-buttons').append(end);
+    $('#end').on('click', () => {
+        $('#rolled-dice').empty();
+        $('#player-dice').empty();
+        if($('#roll-and-select').text() !== 'Roll Dice!'){
+            $('#roll-and-select').text('Roll Dice!');
+        }
 
-            numberOfDice = 6;
+        numberOfDice = 6;
 
-            nextPlayer();
-        })
-    }
+        nextPlayer();
+    })
 }
 
 function hexToRgba(hex, alpha){
@@ -281,8 +297,8 @@ function addPlayer(){
         alert('This game supports up to 6 players.');
         return;
     }
-    if($player === ''){
-        alert('Enter a valid name.');
+    if($player === '' || $player.length > 5){
+        alert('Enter between 1 and 5 characters.');
         return;
     }
 
