@@ -6,11 +6,27 @@
 * @returns {void}
 */
 $(document).ready(() => {
-    $(document).on('click touchstart keypress', (e) => {
-        if((e.target.id === 'add-player' && (e.type === 'click' || e.type === 'touchstart')) || (e.target.id === 'player-name' && e.type === 'keypress' && e.which === 13)){
+    $(document).on('click', (e) => {
+        if (e.target.id === 'add-player') {
+            e.preventDefault();
             addPlayer();
         }
-    })
+    });
+    
+    $(document).on('touchstart', (e) => {
+        if (e.target.id === 'add-player') {
+            e.preventDefault();
+            addPlayer();
+        }
+    });
+    
+    $(document).on('keypress', (e) => {
+        if (e.target.id === 'player-name' && e.which === 13) {
+            e.preventDefault();
+            addPlayer();
+        }
+    });
+    
 
     $('#start').on('click', () => {
         makeButtons();
@@ -31,13 +47,15 @@ function makeButtons(){
     if($('#start').text() === ('Restart')){
         $('#start').text('Start Game');
         $('#start').removeClass('btn-danger');
-        $('.player-container').empty();
+        $('#player-1, #player-2, #player-3, #player-4, #player-5, #player-6').empty();
+        $('#score-1, #score-2, #score-3, #score-4, #score-5, #score-6').empty();
         $('#game-buttons').empty();
         $('#rolled-dice').empty();
         $('#player-dice').empty();
         $('#player-name').show();
         $('#player-color').show();
         $('#add-player').show();
+        playerCount = 1;
     } else{
         $('#start').text('Restart');
         $('#start').addClass('btn-danger');
@@ -213,7 +231,6 @@ function getRandomPosition(container, existingDice = $()) {
             }
         })
     }
-
     return {x, y};
 }
 
@@ -264,7 +281,8 @@ function rollDice(){
 let playerCount = 1;
 
 function addPlayer(){
-    let $player = $('#player-name').val();    
+    let $player = $('#player-name').val().trim();
+    let playerColor = $('#player-color').val();    
 
     if(playerCount === 7){
         alert('This game supports up to 6 players.');
@@ -275,7 +293,6 @@ function addPlayer(){
         return;
     }
 
-    let playerColor = $('#player-color').val();
     let playerNameSpan = $('<span>')
         .text($player)
         .css('color', playerColor);

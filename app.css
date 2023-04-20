@@ -44,3 +44,17 @@ input {
 .roll-dice {
     margin-bottom: 10px;
 }
+
+.player-name-row .col,
+.player-score-row .col {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+@media (max-width: 767px) {
+    .player-name-row .col,
+    .player-score-row .col {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
