@@ -1,10 +1,10 @@
 /**
-* Executes a function when the DOM is fully loaded.
-*
-* @function
-* @param {function} callback - The function to execute when the DOM is loaded.
-* @returns {void}
-*/
+ * Executes a callback function when the DOM is fully loaded.
+ *
+ * @function
+ * @param {function} callback - The function to execute when the DOM is loaded.
+ * @returns {void}
+ */
 $(document).ready(() => {
     $('#add-player').on('click', (e) => {
         e.preventDefault();
@@ -29,11 +29,11 @@ $(document).ready(() => {
 })
 
 /**
-* Dynamically creates buttons for starting/restarting the game and rolling/ending turns.
-*
-* @function
-* @returns {void}
-*/
+ * Dynamically creates buttons for starting/restarting the game and rolling/ending turns.
+ *
+ * @function
+ * @returns {void}
+ */
 function makeButtons(){
     if($('#start').text() === ('Restart')){
         restartButton();
@@ -42,6 +42,12 @@ function makeButtons(){
     }
 }
 
+/**
+ * Modifies the DOM to start the game by hiding the player name and color input fields and creating the game buttons.
+ *
+ * @function
+ * @returns {void}
+ */
 function startButton(){
     $('#start').text('Restart');
     $('#start').addClass('btn-danger');
@@ -53,11 +59,19 @@ function startButton(){
     endTurnButton();
 }
 
+/**
+ * Modifies the DOM to restart the game by resetting player scores, removing existing dice, and showing the player name and color input fields.
+ *
+ * @function
+ * @returns {void}
+ */
 function restartButton(){
     $('#start').text('Start Game');
     $('#start').removeClass('btn-danger');
-    $('#player-1, #player-2, #player-3, #player-4, #player-5, #player-6').empty();
-    $('#score-1, #score-2, #score-3, #score-4, #score-5, #score-6').empty();
+    for (let i = 1; i < playerCount; i++) {
+        $(`#player-${i}`).empty();
+        $(`#score-${i}`).empty();
+    }      
     $('#game-buttons').empty();
     $('#rolled-dice').empty();
     $('#player-dice').empty();
@@ -67,23 +81,36 @@ function restartButton(){
     playerCount = 1;
 }
 
+/**
+ * Dynamically creates a button to roll and select dice, and modifies the DOM to add the button to the game buttons container.
+ *
+ * @function
+ * @returns {void}
+ */
 function rollAndSelectButton(){
     let rollAndSelect = $('<div>').attr('id', 'roll-and-select').addClass('btn btn-success').text('Roll Dice!');
-        $('#game-buttons').append(rollAndSelect);
-        $('#roll-and-select').on('click', () => {
-            if($('#roll-and-select').text() === 'Roll Dice!'){
-                rollDice();
-                allowSelect = true;
-                $('#roll-and-select').text('Select Dice');
-            } else{
-                if(moveDice()){
-                    allowSelect = false;
-                    $('#roll-and-select').text('Roll Dice!');
-                }
+
+    $('#game-buttons').append(rollAndSelect);
+    $('#roll-and-select').on('click', () => {
+        if($('#roll-and-select').text() === 'Roll Dice!'){
+            rollDice();
+            allowSelect = true;
+            $('#roll-and-select').text('Select Dice');
+        } else{
+            if(moveDice()){
+                allowSelect = false;
+                $('#roll-and-select').text('Roll Dice!');
             }
-        })
+        }
+    })
 }
 
+/**
+ * Dynamically creates a button to end the turn, and modifies the DOM to add the button to the game buttons container.
+ *
+ * @function
+ * @returns {void}
+ */
 function endTurnButton(){
     let end = $('<div>').attr('id', 'end').addClass('btn btn-danger').text('End Turn');
     $('#game-buttons').append(end);
@@ -100,12 +127,27 @@ function endTurnButton(){
     })
 }
 
+/**
+ * Converts a hexadecimal color code to an RGBA color code with a specified opacity.
+ *
+ * @function
+ * @param {string} hex - The hexadecimal color code to convert.
+ * @param {number} alpha - The opacity value to use for the RGBA color code.
+ * @returns {string} The RGBA color code.
+ */
 function hexToRgba(hex, alpha){
     hex = hex.replace('#', '');
     const [r, g, b] = hex.match(/\w\w/g).map((c) => parseInt(c, 16));
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+/**
+ * Handles the logic for selecting and deselecting dice on click, based on the current game state.
+ *
+ * @function
+ * @param {Event} e - The event object for the click event on the dice element.
+ * @returns {void}
+ */
 let numberOfSelectedDice = 0;
 let allowSelect = true;
 
@@ -141,12 +183,11 @@ function selectDice(e){
 }
 
 /**
-* Moves a dice from the rolled dice container to the player's active dice container.
-*
-* @function
-* @param {Event} e - The event object for the click event on the rolled dice.
-* @returns {void}
-*/
+ * Moves the selected dice from the rolled dice container to the player's active dice container and updates the view.
+ *
+ * @function
+ * @returns {boolean} A boolean indicating whether or not dice were moved successfully.
+ */
 function moveDice() {
     const roll = $('<div>').html(`<u>Roll: ${diceRoll}</u>`).addClass('text-center');
     const selectedDice = $('.selected');
@@ -198,20 +239,24 @@ function moveDice() {
 }
 
 /**
-* Converts a value in view height units (vh) to pixels.
-* @param {number} vh - The value in view height units (vh) to be converted.
-* @returns {number} The value in pixels.
-*/
+ * Converts a value in view height units (vh) to pixels.
+ *
+ * @function
+ * @param {number} vh - The value in view height units (vh) to be converted.
+ * @returns {number} The value in pixels.
+ */
 function vhToPixels(vh){
     return (vh * document.documentElement.clientHeight) /100;
 }
 
 /**
-* Returns a random position within a container, with a minimum distance between any two objects within the container.
-* @param {object} container - The container element to generate a position within.
-* @param {object} existingDice - Optional. An existing jQuery collection of dice elements within the container.
-* @returns {object} An object containing the x and y coordinates of the random position.
-*/
+ * Returns a random position within a container, with a minimum distance between any two objects within the container.
+ *
+ * @function
+ * @param {object} container - The container element to generate a position within.
+ * @param {object} existingDice - Optional. An existing jQuery collection of dice elements within the container.
+ * @returns {object} An object containing the x and y coordinates of the random position.
+ */
 function getRandomPosition(container, existingDice = $()) {
     const containerWidth = container.width();
     const containerHeight = container.height();
@@ -244,11 +289,13 @@ function getRandomPosition(container, existingDice = $()) {
 }
 
 /**
-* Creates a new dice element with the specified value and position.
-* @param {number} value - The value of the dice (1-6).
-* @param {object} existingDice - An existing jQuery collection of dice elements within the container.
-* @returns {object} A new jQuery object representing the dice element.
-*/
+ * Creates a new dice element with the specified value and position.
+ *
+ * @function
+ * @param {number} value - The value of the dice (1-6).
+ * @param {object} existingDice - An existing jQuery collection of dice elements within the container.
+ * @returns {object} A new jQuery object representing the dice element.
+ */
 function createDiceElement(value, existingDice) {
     const diceNames = ['one', 'two', 'three', 'four', 'five', 'six'];
     const position = getRandomPosition($('#rolled-dice'), existingDice);
@@ -263,8 +310,11 @@ function createDiceElement(value, existingDice) {
 }
 
 /**
-* Rolls a set of dice and adds them to the rolled-dice container.
-*/
+ * Rolls a set of dice and adds them to the rolled-dice container.
+ *
+ * @function
+ * @returns {void}
+ */
 let diceRoll = 0;
 let numberOfDice = 6;
 
@@ -284,9 +334,12 @@ function rollDice(){
 }
 
 /**
-* Appends player name and score of 0 to the player container.
-* Checks for player name/player count validity.
-*/
+ * Appends player name and score of 0 to the player container.
+ * Checks for player name/player count validity.
+ *
+ * @function
+ * @returns {void}
+ */
 let playerCount = 1;
 
 function addPlayer(){
@@ -320,6 +373,13 @@ function addPlayer(){
     playerCount++;
 }
 
+/**
+ * Sets the current player to the next player in the rotation.
+ * Resets the dice roll count to 0.
+ *
+ * @function
+ * @returns {void}
+ */
 let currentPlayer = 1;
 
 function nextPlayer(){
