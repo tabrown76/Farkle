@@ -6,14 +6,7 @@
 * @returns {void}
 */
 $(document).ready(() => {
-    $(document).on('click', (e) => {
-        if (e.target.id === 'add-player') {
-            e.preventDefault();
-            addPlayer();
-        }
-    });
-    
-    $(document).on('touchstart', (e) => {
+    $(document).on('click touchstart', (e) => {
         if (e.target.id === 'add-player') {
             e.preventDefault();
             addPlayer();
