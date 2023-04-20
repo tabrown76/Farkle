@@ -6,7 +6,7 @@
 * @returns {void}
 */
 $(document).ready(() => {
-    $(document).on('click touchstart', (e) => {
+    $(document).on('click', (e) => {
         if (e.target.id === 'add-player') {
             e.preventDefault();
             addPlayer();
