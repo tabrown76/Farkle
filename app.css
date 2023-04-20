@@ -54,7 +54,7 @@ input {
 @media (max-width: 767px) {
     .player-name-row .col,
     .player-score-row .col {
-        flex: 0 0 50%;
-        max-width: 50%;
+        flex: 0 0 16%;
+        max-width: 16%;
     }
 }
