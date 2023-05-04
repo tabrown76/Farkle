@@ -58,3 +58,12 @@ input {
         max-width: 16%;
     }
 }
+
+.temp-score-container {
+    float: right;
+    text-align: right;
+}
+
+.temp-score {
+    text-align: left;
+}

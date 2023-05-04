@@ -17,7 +17,6 @@ $(document).ready(() => {
             addPlayer();
         }
     });
-    
 
     $('#start').on('click', () => {
         makeButtons();
@@ -57,6 +56,7 @@ function startButton(){
     
     rollAndSelectButton();
     endTurnButton();
+    temporaryScoreDiv();
 }
 
 /**
@@ -123,6 +123,8 @@ function endTurnButton(){
 
         numberOfDice = 6;
 
+        incrementScore();
+        $('.temp-score').text('0');
         nextPlayer();
     })
 }
@@ -197,7 +199,7 @@ function moveDice() {
         return false;
     }
 
-    selectedDice.toggleClass('selected');
+    selectedDice.toggleClass(`selected temp-dice roll-${diceRoll}`);
     selectedDice.detach();
     selectedDice.css({
         position: 'static',
@@ -234,6 +236,8 @@ function moveDice() {
     lastRow.append(rollContainer);
 
     numberOfSelectedDice = 0;
+
+    temporaryScore();
 
     return true;
 }
@@ -392,4 +396,143 @@ function nextPlayer(){
     if(diceRoll !== 0){
         diceRoll = 0;
     }
+}
+
+/**
+ *Increments the current player's score by the value of their temporary score.
+ *@function
+ *@returns {void}
+ */
+function incrementScore(){
+    let currentScore = parseInt($(`.score-${currentPlayer}`).text());
+    let tempScore = parseInt($('.temp-score').text());
+    let newScore = currentScore + tempScore;
+
+    $(`.score-${currentPlayer}`).text(newScore);
+}
+
+/**
+ *Creates a container for displaying the temporary score and adds it to the game buttons container.
+ *@function
+ *@returns {void}
+ */
+function temporaryScoreDiv(){
+    let tempScoreDiv = $('<div>').addClass('temp-score-container').html('<u>Potential Points</u>');
+    $('#game-buttons').append(tempScoreDiv);
+
+    let tempScore = $('<div>').addClass('temp-score').text('0');
+    tempScoreDiv.append(tempScore);
+}
+
+/**
+ *Calculates the score based on the dice values in the temporary dice container.
+ *@function
+ *@param {jQuery} tempDice - The collection of dice elements in the temporary dice container.
+ *@returns {number} The calculated score.
+ */
+function calcScore(tempDice){
+    let diceObject = {};
+    const wordToNumber = {
+        'one': 1,
+        'two': 2,
+        'three': 3,
+        'four': 4,
+        'five': 5,
+        'six': 6,
+    };
+
+    tempDice.each(function (){
+        const dieClass = $(this).attr('class').split(' ')[1];
+
+        if (diceObject.hasOwnProperty(dieClass)){
+            diceObject[dieClass] += 1;
+        } else {
+            diceObject[dieClass] = 1;
+        }
+    });
+
+    let score = 0;
+    let numSingles = 0;
+    let numDoubles = 0;
+    let numTriplets = 0;
+    let threeDoubles = false;
+
+    for (let key in diceObject){
+        const dieValue = wordToNumber[key];
+        const count = diceObject[key];
+
+        if(diceObject[key] === 2){
+            numDoubles++;
+        }
+
+        if(numDoubles === 3){
+            score += 1500;
+            threeDoubles = true;
+            break;
+        }
+    }
+
+    if(!threeDoubles){
+        for(let key in diceObject){
+            const dieValue = wordToNumber[key];
+            const count = diceObject[key];
+
+            if(diceObject[key] === 1){
+                numSingles++;
+                if(numSingles === 6){
+                    score += 1500;
+                } else if(dieValue === 1){
+                    score += 100;
+                } else if(dieValue === 5){
+                    score += 50;
+                }
+            } else if(diceObject[key] === 2){
+                if(dieValue === 1){
+                    score += count * 100;
+                } else if(dieValue === 5){
+                    score += count * 50;
+                }
+            } else if(diceObject[key] === 3){
+                numTriplets++;
+                if(numTriplets === 2){
+                    score += 2500;
+                } else {
+                    if(dieValue === 1){
+                        score += 300;
+                    } else {
+                        score += dieValue * 100;
+                    }
+                }
+            } else if(diceObject[key] === 4){
+                if(numDoubles === 2){
+                    score += 1500;
+                } else{
+                    score += 1000;
+                }
+            } else if(diceObject[key] === 5){
+                score += 2000;
+            } else if(diceObject[key] === 6) {
+                score += 3000;
+            }
+        }
+    }
+    return score;
+}
+
+/**
+ *Updates the temporary score based on the selected dice in the temporary dice container.
+ *@function
+ *@returns {void}
+ */
+function temporaryScore(){
+    let tempDice = $('.temp-dice');
+    let currentDiceRoll = `roll-${diceRoll}`;
+    let currentTempDice = tempDice.filter(`.${currentDiceRoll}`);
+    
+    let currentScore = parseInt($('.temp-score').text());
+
+    const calculateScore = calcScore(currentTempDice);   
+    let newTempScore = calculateScore + currentScore;
+
+    $('.temp-score').text(newTempScore);
 }
